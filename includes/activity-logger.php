@@ -38,7 +38,7 @@
 
         } catch (PDOException $e){
             echo "Activity Log Error: " . $e->getMessage();
-            return false;
+            return false; 
         }
     }
 ?>
