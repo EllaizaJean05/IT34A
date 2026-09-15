@@ -13,12 +13,36 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $login = trim($_POST['login'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if(loginUser($pdo, $login, $password)){
-        header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
-        exit;
-    }
+    
 
     $error = 'Invalid login credentials';
+    
+    if($login==='' || $password===''){
+        $error = 'Invalid login credentials';
+        logActivity(
+            $pdo,
+            null,
+            $login,
+            'login',
+            'failed'
+
+        );
+
+    }else {
+        if(loginUser($pdo,$login,$password)){
+            logActivity(
+                $pdo,
+                $_SESSION['user_id'],
+                $_SESSION['user_email'],
+                'login',
+                'success'
+
+            );
+        header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+        exit;
+    
+        }
+    }
 }
 
 ?>
@@ -31,7 +55,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </head>
 <body>
     <h1>User Login</h1>
-    <form method="POST"
+    <form method="POST">
         <label> Username or email </label>
         <input type="text"
                name="login"
@@ -39,7 +63,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         >
         <br>
         <label>Password</label>
-        <input type=""password"
+        <input type="password"
                name="password"
                required
         >
