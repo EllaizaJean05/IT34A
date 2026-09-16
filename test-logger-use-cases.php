@@ -22,7 +22,8 @@ $button = [
         <th>Action</th>
         <th>Test</th>
     </tr>
-    <?php foreach ($button as $button): ?>
+    <?php foreach ($button as $button): 
+        ?>
         <tr>
             <td><?= htmlspecialchars($button) ?></td>
             <td>
