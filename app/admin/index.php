@@ -53,15 +53,13 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
     <h1>Activity Logs</h1>
-
     <p>
         <a href="../../auth/signout.php">Logout</a>
     </p>
 
-
     <table border="1">
 
-        <thead>
+     <thead>
 
             <tr>
                 <th>ID</th>
@@ -81,8 +79,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <?php foreach ($activities as $activity): ?>
 
-                <tr>
-
+            <tr>
                     <td>
                         <?= htmlspecialchars(
                             $activity['activity_log_id']
@@ -131,7 +128,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         ) ?>
                     </td>
 
-                </tr>
+             </tr>
 
             <?php endforeach; ?>
 
