@@ -25,7 +25,8 @@ $button = [
     <?php foreach ($button as $button): 
         ?>
         <tr>
-            <td><?= htmlspecialchars($button) ?></td>
+            
+        <td><?= htmlspecialchars($button) ?></td>
             <td>
                 <form method="post">
                     <input type="hidden" name="action" value="<?= htmlspecialchars($button) ?>">
