@@ -28,24 +28,28 @@ function startUserSession($pdo){
 }
 function endUserSession($pdo){
 
+    if (!isset($_SESSION['session_id'])) {
+        return false;
+    }
+
     $session_id = $_SESSION['session_id'];
 
     $stmt = $pdo->prepare("
         UPDATE user_sessions
         SET
-            session_end=NOW(),
-            session_duration=TIMESTAMPDIFF(
+            session_end = NOW(),
+            session_duration = TIMESTAMPDIFF(
                 SECOND,
                 session_start,
                 NOW()
             )
         WHERE session_id = :session_id
+        AND session_end IS NULL
     ");
 
     return $stmt->execute([
-        'session_id' => $session_id
+        ':session_id' => $session_id
     ]);
-
 }
 
 
@@ -64,6 +68,46 @@ function hasActiveUserSession($pdo, $user_id){
     ]);
 
     return (bool) $stmt->fetchColumn();
+}
+
+// Session Timeout
+function checkSessionTimeout(){
+    global $pdo;
+
+    // Timeout Settings
+    // 10s for testing
+    // 1800 for 30min session time
+
+    $timeout = 10;
+    
+
+    // Check last activity 
+    if(isset($_SESSION['last_activity'])){
+
+        $inactive = time() - $_SESSION['last_activity'];
+
+        if($inactive >= $timeout){
+            // End database session
+            endUserSession($pdo);
+
+            // Destroy Session
+            session_unset();
+            session_destroy();
+
+            // Redirect
+            header(
+                'Location:'.
+                BASE_URL .
+                '/index.php?timeout=1'
+            );
+
+            exit;
+        }
+    }
+    // Update Last Activity
+
+    $_SESSION['last_activity']=time();
+
 }
 
 

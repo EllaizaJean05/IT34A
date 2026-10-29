@@ -8,7 +8,7 @@ require_once(__DIR__ . '/../functions/sessions.php');
 
 //define('', '');
 
-define('BASE_URL','http://localhost/it3aa');
+define('BASE_URL','http://localhost/it34a-1');
 
 define('DB_HOST','localhost');
 define('DB_NAME','it3aa_lab_db');
