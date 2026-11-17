@@ -82,9 +82,6 @@ if($action == 'export'){
 
         <table id="example" class="table table-striped" style="width: auto">
             
-        <p>
-            <a href="?section=activity_logs&action=export">Export CSV</a>
-        </p>
         </h4>
         
         <table id="example" class="table table-striped" style="width: auto">
