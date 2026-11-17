@@ -1,36 +1,58 @@
 <?php
-
-require_once '../../config/config.php';
+require '../../config/config.php';
 
 requireRole('admin');
 
-logActivity(
-    $pdo,
-    $_SESSION['user_id'],
-    $_SESSION['user_email'],
-    'view_activity_logs'
-);
+$section = $_GET['section'] ?? 'activity-logs';
+$action = $_GET['action'] ?? '';
 
-//  Get All Activity Logs
-
+// Activity Logs Query#3
 $stmt = $pdo->query("
-    SELECT
-        activity_log_id,
-        user_id,
-        user_email,
-        activity_log_action,
-        activity_log_status,
-        activity_log_ip_address,
-        activity_log_user_agent,
-        activity_log_created_at
-
+    SELECT *
     FROM activity_logs
-
     ORDER BY activity_log_created_at DESC
 ");
 
 $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+if($action == 'export'){
+
+    if($section == 'activity-logs'){
+
+        $stmt = $pdo->query("
+            SELECT
+                activity_log_id,
+                user_id,
+                user_email,
+                activity_log_action,
+                activity_log_status,
+                activity_log_ip_address,
+                activity_log_user_agent,
+                activity_log_created_at
+            FROM activity_logs
+            ORDER BY activity_log_created_at
+        ");
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        logActivity(
+            $pdo,
+            $_SESSION['user_id'],
+            $_SESSION['user_email'],
+            'export_activity_logs',
+            'success'
+        );
+
+        exportCsv(
+            'activity_logs',
+            [
+                'Record ID', 'User ID', 'User Email', 'Action',
+                'Status', 'IP Address', 'User Agent', 'Date & Time',
+            ],
+            $rows
+        );
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,29 +61,35 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
 
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
-
-    <title>Activity Logs</title>
+    <meta name="viewport"content="width=device-width, initial-scale=1"
+    ><title>Activity Logs</title>
 
 </head>
 
 <body>
 
-    <h1>Activity Logs</h1>
-    <p>
+    <h1>Welcome Admin</h1>
+    
         <a href="../../auth/signout.php">Logout</a>
-    </p>
+    
 
-    <table border="1">
+    <?php if ($section === 'activity-logs'): ?>
+        <h4>Activity Logs</h4>
+
+        <p>
+            <a href="?section=activity-logs&action=export">Export CSV</a>
+        </p>
+
+        <table id="example" class="table table-striped" style="width: auto">
+            
+        </h4>
+        
+        <table id="example" class="table table-striped" style="width: auto">
 
      <thead>
 
             <tr>
-                <th>ID</th>
+                <th>RecordID</th>
                 <th>User ID</th>
                 <th>Email</th>
                 <th>Action</th>
@@ -126,15 +154,17 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             $activity['activity_log_created_at']
                         ) ?>
                     </td>
+                    
 
              </tr>
 
             <?php endforeach; ?>
-
+             
         </tbody>
 
     </table>
-
+    
+    <?php endif; ?>
 </body>
 
 </html>
